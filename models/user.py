@@ -1,9 +1,10 @@
 """The user table"""
 
+from flask_login import UserMixin
 from config import db
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     """User model"""
 
     id = db.Column(db.Integer, primary_key=True)

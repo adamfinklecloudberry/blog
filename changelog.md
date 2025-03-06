@@ -16,6 +16,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactored into more manageable pieces
 
+## [0.2.0]
+
+### Added
+
+- Added a user page listing the urls of the files uploaded by a user
+- Added an API that returns the links as a json
+- Required logging in before allowing an upload
+- Added a logout button to index.html
+- Expanded the README
+- Added requirements-dev.txt
+
+### Changed
+
+- Fixed login and registration
+
 
 ## [0.1.0]
 

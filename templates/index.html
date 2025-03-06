@@ -28,6 +28,16 @@
             top: 10px;
             right: 20px;
         }
+        .logout-button-container {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+        }
+        .upload-button-container {
+            position: absolute;
+            top: 10px;
+            left: 120px;
+        }
     </style>
 </head>
 <body>
@@ -37,10 +47,15 @@
             <a href="{{ url_for('authentication.login') }}" class="btn btn-primary mr-2">Login</a>
             <a href="{{ url_for('authentication.register') }}" class="btn btn-success">Register</a>
         </div>
+        <div class="logout-button-container">
+            <a href="{{ url_for('authentication.logout') }}" class="btn btn-danger">Logout</a>
+        </div>
+        <div class="upload-button-container">
+            <a href="{{ url_for('submissions.upload_file') }}" class="btn btn-secondary">Upload a File</a>
+        </div>
     </header>
     <main class="container">
         <p>Welcome to the blog! Here you will find a collection of articles on various topics.</p>
-        <a href="{{ url_for('submissions.upload_file') }}" class="btn btn-secondary">Upload a File</a>
     </main>
 </body>
 </html>

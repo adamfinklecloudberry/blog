@@ -4,9 +4,14 @@ import boto3
 from botocore.client import Config
 from botocore.exceptions import NoCredentialsError, PartialCredentialsError, ClientError
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 import secrets
 import os
 
+
+# Initialize the LoginManager
+login_manager = LoginManager()
+login_manager.login_view = "authentication.login"
 
 # Initialize the database
 db = SQLAlchemy()
@@ -15,17 +20,12 @@ db = SQLAlchemy()
 if os.getenv("BACKEND_DEBUG_MODE") == "True":
     s3 = boto3.client(
         "s3",
-        # aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        # aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
         endpoint_url=os.getenv("LOCALSTACK_ENDPOINT"),
         config=Config(signature_version="s3v4"),
-        # region_name=os.getenv("AWS_REGION"),
     )
 else:
     s3 = boto3.client(
         "s3",
-        # aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        # aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
         region_name=os.getenv("AWS_REGION"),
     )
 
@@ -37,6 +37,9 @@ def init_app(app):
 
     # Setup testing mode
     app.config["TESTING"] = os.getenv("BACKEND_DEBUG_MODE") == "True"
+
+    # Initialize login
+    login_manager.init_app(app)
 
     # Configure the app
     if app.config["TESTING"] == True:

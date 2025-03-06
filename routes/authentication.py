@@ -2,7 +2,6 @@
 
 from config import login_manager, db
 from models.user import User
-from extensions import bcrypt
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash

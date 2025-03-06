@@ -1,7 +1,6 @@
 """A blog where users can post content and upload/download files to/from S3"""
 
 from config import init_app, create_bucket
-from extensions import bcrypt
 from routes.home import home_blueprint
 from routes.authentication import authentication_blueprint
 from routes.submissions import submissions_blueprint
@@ -23,7 +22,6 @@ load_dotenv()
 # Initialize the app
 app = Flask(__name__)
 init_app(app)
-bcrypt.init_app(app)
 
 # Register the blueprints
 app.register_blueprint(home_blueprint)

@@ -102,22 +102,42 @@ def get_user_files_route(user_id: int):
     return get_user_files(user_id)
 
 
+def get_username_by_id(user_id: int) -> str:
+    """Fetch the username for a given user ID."""
+    user = User.query.get(user_id)
+    if user:
+        return user.username
+    return None
+
+
 @submissions_blueprint.route("/user/<int:user_id>/files_page", methods=["GET"])
 def user_files_page(user_id: int):
     """Route to render the HTML page with file links"""
     try:
         # Call the get_user_files function directly
-        file_links = get_user_files(user_id).get_json()
-        error_message = ""
+        response = get_user_files(user_id)
+        if response.status_code == 200:
+            file_links = response.get_json()
+            error_message = ''
+        else:
+            file_links = []
+            error_message = f"Failed to retrieve files: {response.status_code}"
+
+        # Fetch the username
+        user = get_username_by_id(user_id)
+        if not user:
+            raise ValueError("User not found")
+
     except Exception as e:
         # Handle any exceptions
         file_links = []
         error_message = str(e)
+        user = None
 
     # Render the HTML template with the file links
     return render_template(
         "user_files.html",
         file_links=file_links,
-        user_id=user_id,
+        user=user,
         error_message=error_message,
     )

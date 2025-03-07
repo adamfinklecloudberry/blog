@@ -18,6 +18,9 @@
             color: #fff;
             padding: 1em 0;
             text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             position: relative;
         }
         h1 {
@@ -25,40 +28,53 @@
         }
         .button-container {
             position: absolute;
-            top: 10px;
             right: 20px;
+            display: flex;
+            align-items: center;
         }
         .logout-button-container {
             position: absolute;
-            top: 10px;
             left: 20px;
+            display: flex;
+            align-items: center;
         }
         .upload-button-container {
             position: absolute;
-            top: 10px;
             left: 120px;
+            display: flex;
+            align-items: center;
+        }
+        .btn-custom {
+            height: 40px; /* Adjust the height as needed */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .button-spacing {
+            margin-right: 10px; /* Adjust the spacing as needed */
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Blog</h1>
+        <h1>Blog Host</h1>
         {% if current_user.is_authenticated %}
             <div class="logout-button-container">
-                <a href="{{ url_for('authentication.logout') }}" class="btn btn-danger">Logout</a>
+                <a href="{{ url_for('authentication.logout') }}" class="btn btn-danger btn-custom">Logout</a>
             </div>
             <div class="upload-button-container">
-                <a href="{{ url_for('submissions.upload_file') }}" class="btn btn-secondary">Upload a File</a>
+                <a href="{{ url_for('submissions.upload_file') }}" class="btn btn-secondary btn-custom button-spacing">Upload a Post</a>
             </div>
         {% else %}
             <div class="button-container">
-                <a href="{{ url_for('authentication.login') }}" class="btn btn-primary mr-2">Login</a>
+                <a href="{{ url_for('authentication.login') }}" class="btn btn-primary button-spacing">Login</a>
                 <a href="{{ url_for('authentication.register') }}" class="btn btn-success">Register</a>
             </div>
         {% endif %}
     </header>
-    <main class="container">
-        <p>Welcome to the blog! Here you will find a collection of articles on various topics.</p>
+    <main class="container text-center">
+        <p>Welcome to the blog hosting site!</p>
+        <p>Here you will find a collection of blogs containing articles on various topics.</p>
     </main>
 </body>
 </html>

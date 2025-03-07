@@ -28,10 +28,28 @@ If you plan to develop Blog, also install the development requirements
 ```
 pip install -r requirements-dev.txt
 ```
-6. Launch blog
+6. Copy the example.env to a .env file
+```
+cp example.env .env
+```
+If you plan to run locally, setup localstack.  See below.
+8. Launch blog
 ```
 python3 -m app
 ```
+
+## localstack
+1. Docker: Ensure Docker is installed on your machine. 
+You can download it from Docker's official website.
+2. Open your terminal and pull the latest LocalStack Docker image from Docker Hub.
+```
+docker pull localstack/localstack
+```
+3. Start LocalStack with default settings.
+```
+docker run -it -p 4566:4566 -p 4571:4571 localstack/localstack
+```
+4. To run the app locally, return to step 8 of Installation 
 
 ## Use
 To upload and view a file for the first time
@@ -44,7 +62,9 @@ To upload and view a file for the first time
 7. Click Browse
 8. Select a text (.txt) file
 9. Click Upload
-10. Type /view/ and then the name of the file into the URL bar after the page URL
-11. Hit enter, and you will be redirected to a page where you can see the text
+10. Click Back to Home
+11. Click your username
+12. Click the name of your file
+13. See your blog post
 
 

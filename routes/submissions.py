@@ -3,7 +3,41 @@
 from config import s3, db
 from models.file import File
 from models.user import User
-from flask import Blueprint, request, render_template, current_app, url_for, jsonify
+from flask import (
+    Blueprint,
+    request,
+    render_template,
+    current_app,
+    url_for,
+    jsonify,
+    send_from_directory,
+    redirect,
+)
+from flask_login import login_required, current_user
+import boto3
+from werkzeug.utils import secure_filename
+from botocore.exceptions import ClientError
+import os
+import requests
+
+
+submissions_blueprint = Blueprint("submissions", __name__)
+
+
+"""Routes for submission handling"""
+
+from config import s3, db
+from models.file import File
+from models.user import User
+from flask import (
+    Blueprint,
+    request,
+    render_template,
+    current_app,
+    url_for,
+    jsonify,
+    send_from_directory,
+)
 from flask_login import login_required, current_user
 import boto3
 from werkzeug.utils import secure_filename
@@ -19,9 +53,6 @@ submissions_blueprint = Blueprint("submissions", __name__)
 @login_required
 def upload_file():
     """Route to handle file uploads"""
-    if not current_user.is_authenticated:
-        return "User is not authenticated", 401
-
     if request.method == "POST":
         if "file" not in request.files:
             return "No file part"
@@ -29,18 +60,26 @@ def upload_file():
         if file.filename == "":
             return "No selected file"
         if file:
+            # Check if the file has a .txt extension
+            if not file.filename.lower().endswith(".txt"):
+                return "Only .txt files are allowed", 400
+
             try:
                 # Secure the filename
                 original_filename = secure_filename(file.filename)
-                filename = original_filename
+                filename = f"{current_user.username}/{original_filename}"
 
-                # Check if the filename already exists in the database
-                existing_file = File.query.filter_by(filename=filename).first()
+                # Check if the file already exists for the user
+                existing_file = File.query.filter_by(
+                    user_id=current_user.id, filename=original_filename
+                ).first()
                 if existing_file:
-                    return "A file with this name already exists", 400
+                    return "File with the same name already exists", 400
 
                 # Create a new File instance and associate it with the current user
-                file_instance = File(filename=filename, user_id=current_user.id)
+                file_instance = File(
+                    filename=original_filename, user_id=current_user.id
+                )
                 db.session.add(file_instance)
                 db.session.commit()
 
@@ -62,82 +101,42 @@ def download_file(filename):
         return str(e)
 
 
-@submissions_blueprint.route("/view/<filename>")
-def view_file(filename):
-    """Route to handle file viewing"""
+@submissions_blueprint.route("/blog/<username>")
+def user_files(username):
+    # Query the database for the user
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        abort(404, description="User not found")
+
+    # Query the database for files associated with the user
+    files = File.query.filter_by(user_id=user.id).all()
+
+    # Create a list of file links without the .txt extension
+    file_links = [
+        f'/blog/{username}/{file.filename.rsplit(".", 1)[0]}' for file in files
+    ]
+
+    # Render the template with the file links
+    return render_template(
+        "user_files.html", user=user.username, file_links=file_links, error_message=None
+    )
+
+
+@submissions_blueprint.route("/blog/<username>/<filename>")
+def get_file(username: str, filename: str):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return "User not found", 404
+
+    # Generate the S3 key
+    s3_key = f"{username}/{filename}.txt"
+
     try:
-        # Get the bucket name from environment variables
-        bucket_name = os.getenv("S3_BUCKET_NAME")
-        if not bucket_name:
-            return "S3 bucket name is not set in environment variables", 500
         # Get the object from the S3 bucket
-        obj = s3.get_object(Bucket=bucket_name, Key=filename)
+        obj = s3.get_object(Bucket=os.getenv("S3_BUCKET_NAME"), Key=s3_key)
         # Read the file content
         file_content = obj["Body"].read().decode("utf-8")
         # Render the template with the file content
         return render_template("view.html", filename=filename, content=file_content)
     except Exception as e:
-        # Return the error message
-        return str(e), 500
-
-
-def get_user_files(user_id: int):
-    """Function to return links to all files associated with a user"""
-    # Get all files associated with the specified user
-    files = File.query.filter_by(user_id=user_id).all()
-
-    # Create a list of file links
-    file_links = [
-        url_for("submissions.view_file", filename=file.filename, _external=True)
-        for file in files
-    ]
-
-    # Return the list of file links as JSON
-    return jsonify(file_links)
-
-
-@submissions_blueprint.route("/user/<int:user_id>/files", methods=["GET"])
-def get_user_files_route(user_id: int):
-    """Route to return links to all files associated with a user"""
-    return get_user_files(user_id)
-
-
-def get_username_by_id(user_id: int) -> str:
-    """Fetch the username for a given user ID."""
-    user = User.query.get(user_id)
-    if user:
-        return user.username
-    return None
-
-
-@submissions_blueprint.route("/user/<int:user_id>/files_page", methods=["GET"])
-def user_files_page(user_id: int):
-    """Route to render the HTML page with file links"""
-    try:
-        # Call the get_user_files function directly
-        response = get_user_files(user_id)
-        if response.status_code == 200:
-            file_links = response.get_json()
-            error_message = ''
-        else:
-            file_links = []
-            error_message = f"Failed to retrieve files: {response.status_code}"
-
-        # Fetch the username
-        user = get_username_by_id(user_id)
-        if not user:
-            raise ValueError("User not found")
-
-    except Exception as e:
-        # Handle any exceptions
-        file_links = []
-        error_message = str(e)
-        user = None
-
-    # Render the HTML template with the file links
-    return render_template(
-        "user_files.html",
-        file_links=file_links,
-        user=user,
-        error_message=error_message,
-    )
+        return f"Error fetching file: {e}", 500

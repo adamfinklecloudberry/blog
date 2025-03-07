@@ -33,13 +33,15 @@
     </style>
 </head>
 <body>
-    <h1>Files for User {{ user }}</h1>
+    <h1>{{ user }}'s posts</h1>
     {% if error_message %}
         <div class="error">{{ error_message }}</div>
     {% endif %}
     <ul>
         {% for link in file_links %}
-            <li><a href="{{ link }}" target="_blank">{{ link }}</a></li>
+            <li>
+                <a href="{{ link }}" target="_blank">{{ link.split('/')[-1] }}</a>
+            </li>
         {% endfor %}
     </ul>
 </body>

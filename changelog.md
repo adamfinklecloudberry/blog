@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0]
+
+### Added
+
+- Wrote and expanded docstrings for all python files
+- Logging configuration by environment variable
+- Logging to all routes
+- An error.html where errors will redirect
+- SQLAlchemy error handling to submissions.user_files, authentication.register, and authentication.login
+- Error handling to authentication.logout
+- Abort import
+
+### Changed
+
+- Changed download route to use username/postname
+- Rearranged fields in example.env to be easier to understand
+
 
 ## [0.4.0]
 

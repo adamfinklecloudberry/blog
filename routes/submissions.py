@@ -8,35 +8,11 @@ from flask import (
     request,
     render_template,
     current_app,
+    flash,
     url_for,
     jsonify,
     send_from_directory,
     redirect,
-)
-from flask_login import login_required, current_user
-import boto3
-from werkzeug.utils import secure_filename
-from botocore.exceptions import ClientError
-import os
-import requests
-
-
-submissions_blueprint = Blueprint("submissions", __name__)
-
-
-"""Routes for submission handling"""
-
-from config import s3, db
-from models.file import File
-from models.user import User
-from flask import (
-    Blueprint,
-    request,
-    render_template,
-    current_app,
-    url_for,
-    jsonify,
-    send_from_directory,
 )
 from flask_login import login_required, current_user
 import boto3
@@ -55,14 +31,17 @@ def upload_file():
     """Route to handle file uploads"""
     if request.method == "POST":
         if "file" not in request.files:
-            return "No file part"
+            flash("No file part", "danger")
+            return redirect(url_for("submissions.upload_file"))
         file = request.files["file"]
         if file.filename == "":
-            return "No selected file"
+            flash("No selected file", "danger")
+            return redirect(url_for("submissions.upload_file"))
         if file:
             # Check if the file has a .txt extension
             if not file.filename.lower().endswith(".txt"):
-                return "Only .txt files are allowed", 400
+                flash("Only .txt files are allowed", "danger")
+                return redirect(url_for("submissions.upload_file"))
 
             try:
                 # Secure the filename
@@ -74,7 +53,8 @@ def upload_file():
                     user_id=current_user.id, filename=original_filename
                 ).first()
                 if existing_file:
-                    return "File with the same name already exists", 400
+                    flash("A blog post with the same name already exists.", "danger")
+                    return redirect(url_for("submissions.upload_file"))
 
                 # Create a new File instance and associate it with the current user
                 file_instance = File(
@@ -85,10 +65,13 @@ def upload_file():
 
                 # Upload to S3
                 s3.upload_fileobj(file, os.getenv("S3_BUCKET_NAME"), filename)
-                return "File uploaded successfully"
+                flash("Blog post uploaded successfully", "success")
+                return redirect(url_for("submissions.upload_file"))
             except ClientError as e:
-                return f"Error uploading file: {e}"
+                flash(f"Error uploading file: {e}", "danger")
+                return redirect(url_for("submissions.upload_file"))
     return render_template("upload.html")
+
 
 
 @submissions_blueprint.route("/download/<filename>")

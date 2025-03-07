@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View File</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         pre {
             white-space: pre-wrap;       /* Since CSS 2.1 */
@@ -11,12 +13,29 @@
             white-space: -pre-wrap;      /* Opera 4-6 */
             white-space: -o-pre-wrap;    /* Opera 7 */
             word-wrap: break-word;       /* Internet Explorer 5.5+ */
+            font-family: Arial, sans-serif; /* Change font to Arial */
+            max-width: 550px;            /* Set a more comfortable width */
+            margin: 0 auto;              /* Center the text box */
+            padding: 10px;               /* Add some padding inside the text box */
+            border: none;                /* Remove the border */
+            background-color: #f9f9f9;   /* Optional: Add a light background color */
+        }
+        .card {
+            border: none;                /* Remove the border of the card */
         }
     </style>
 </head>
 <body>
-    <h1>Viewing File: {{ filename }}</h1>
-    <pre>{{ content }}</pre>
-    <a href="{{ url_for('home.home') }}">Back to Home</a>
+    <div class="container mt-5">
+        <h1 class="text-center">{{ filename }}</h1>
+        <div class="card mt-4">
+            <div class="card-body">
+                <pre>{{ content }}</pre>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('home.home') }}" class="btn btn-primary">Back to Home</a>
+        </div>
+    </div>
 </body>
 </html>

@@ -4,13 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Files</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .banner {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Files for User ID: {{ user_id }}</h1>
-    <ul>
-        {% for link in file_links %}
-            <li><a href="{{ link }}">{{ link }}</a></li>
-        {% endfor %}
-    </ul>
+    <div class="banner">
+        <h1>{{ user }}'s posts</h1>
+    </div>
+    <div class="container text-center">
+        {% if error_message %}
+            <div class="error">{{ error_message }}</div>
+        {% endif %}
+        <ul class="list-unstyled">
+            {% for link in file_links %}
+                <li class="my-2">
+                    <a href="{{ link }}" target="_blank" class="text-primary">{{ link.split('/')[-1] }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>

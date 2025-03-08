@@ -35,7 +35,7 @@ cp example.env .env
 If you plan to run locally, setup localstack.  See below.
 8. Launch blog
 ```
-python3 -m app
+flask run
 ```
 
 ## localstack

@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.0.0]
+
+### Added
+
+- Set_password and check_password methods to models.User
+- Expanded SQLAlchemyError and ClientError handling for submissions.upload_file
+- A test suite for upload_File
+- General exception handling to submissions.upload_file
+
+### Changed
+
+- Restructured app into a package, changing imports accordingly
+
+
 ## [0.7.0]
 
 ### Added

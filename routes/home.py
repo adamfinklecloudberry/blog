@@ -4,7 +4,7 @@ The home route
 - Defines the home route for a Flask application
 """
 
-from models.user import User
+from blog.models.user import User
 from flask import Blueprint, render_template
 import logging
 

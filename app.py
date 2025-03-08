@@ -7,10 +7,10 @@ A blog where users can post content and upload/download files to/from S3
     different routes, and handles the creation of an S3 bucket
 """
 
-from config import init_app, create_bucket
-from routes.home import home_blueprint
-from routes.authentication import authentication_blueprint
-from routes.submissions import submissions_blueprint
+from blog.config import init_app, create_bucket
+from blog.routes.home import home_blueprint
+from blog.routes.authentication import authentication_blueprint
+from blog.routes.submissions import submissions_blueprint
 from flask import (
     Flask,
     render_template,

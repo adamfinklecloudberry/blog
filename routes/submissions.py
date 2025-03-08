@@ -7,9 +7,9 @@ displaying a list of files for a specific user, and retrieving the content of a
 specific file.
 """
 
-from config import s3, db
-from models.file import File
-from models.user import User
+from blog.config import s3, db
+from blog.models.file import File
+from blog.models.user import User
 from flask import (
     Blueprint,
     request,
@@ -126,7 +126,11 @@ def upload_file():
                 return redirect(url_for("submissions.upload_file"))
             except (SQLAlchemyError, ClientError) as e:
                 logger.error(f"Error uploading file: {e}")
-                flash(f"Error uploading file: {e}", "danger")
+                flash("Error uploading file: Database error", "danger")
+                return redirect(url_for("submissions.upload_file"))
+            except Exception as e:
+                logger.error(f"Unexpected error: {e}")
+                flash("An unexpected error occurred. Please try again later.", "danger")
                 return redirect(url_for("submissions.upload_file"))
     else:
         logger.info("Handling GET request for file upload")

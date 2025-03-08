@@ -1,6 +1,6 @@
 """File database"""
 
-from config import db
+from blog.config import db
 
 
 class File(db.Model):
